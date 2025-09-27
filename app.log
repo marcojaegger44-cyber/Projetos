@@ -1,0 +1,18 @@
+2025-09-15 04:36:57,836 - INFO - Sistema de logging configurado
+2025-09-15 04:38:11,225 - INFO - Sistema de logging configurado
+2025-09-15 04:38:49,013 - INFO - Sistema de logging configurado
+2025-09-15 04:39:23,901 - INFO - Sistema de logging configurado
+2025-09-15 04:40:35,166 - INFO - Sistema de logging configurado
+2025-09-15 04:40:46,777 - INFO - Sistema de logging configurado
+2025-09-15 04:44:03,233 - INFO - Sistema de logging configurado
+2025-09-15 04:46:47,570 - INFO - Sistema de logging configurado
+2025-09-15 05:06:40,421 - INFO - Usuário 'admin' logou no sistema
+2025-09-15 05:07:09,417 - INFO - Usuário 'admin' logou no sistema
+2025-09-15 05:07:36,883 - ERROR - Erro ao salvar dados: Object of type Decimal is not JSON serializable
+2025-09-15 05:07:44,293 - INFO - Dados salvos com sucesso
+2025-09-15 05:08:05,537 - INFO - Usuário 'admin' logou no sistema
+2025-09-15 05:14:56,861 - INFO - Usuário 'admin' logou no sistema
+2025-09-15 05:20:56,012 - INFO - Usuário 'admin' logou no sistema
+2025-09-15 05:23:23,638 - INFO - Usuário 'admin' logou no sistema
+2025-09-15 05:26:29,690 - INFO - Usuário 'admin' logou no sistema
+2025-09-15 05:31:03,790 - INFO - Usuário 'admin' logou no sistema

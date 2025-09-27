@@ -1,0 +1,92 @@
+# Sistema CM – Visão Geral e Plano de Implementação
+
+## 1. Requisitos do Cliente (originais)
+
+1. Interface desktop em Python (boa aparência, segurança baixa, banco pequeno).
+2. Negócio por Loja:
+   • Venda de Curso.
+   • Corretagem de Imóvel.
+3. Fluxo de Vendas:
+   • Cadastro de cliente.
+   • Geração de contrato (curso / imóvel).
+   • Pagamento de 2–12 parcelas (curso) com possibilidade de cancelamento e multa.
+   • Comissão de corretagem sobre valor de venda de imóvel.
+4. Controle de Caixa:
+   • Receitas: parcelas de curso, comissão de imóvel, receitas diversas.
+   • Despesas: cash-back automático do curso, despesas diversas.
+5. Descontos / Acréscimos:
+   • Possibilidade de desconto.
+   • Correção de parcelas atrasadas (% ao dia).
+6. Metas mensais:
+   • 30 % de cash-back acumulado.
+   • R$ 10 000 de comissão → meta parcial 50 %.
+7. Dados críticos:
+   • Clientes em atraso.
+   • Clientes potenciais / reclamações.
+   • Baixa comissão de corretagem.
+8. Usuários e permissões: por enquanto não existe.
+9. Usuária principal: Carolina Magalhães (exibir foto).
+10. Sem integrações externas.
+11. Estrutura de Menus / Abas:
+    • Início                   (dashboard, painel financeiro diário).
+    • Cadastros                (Usuário, Loja, Cliente, Módulo de Curso, Imóvel, Receita, Despesa).
+    • Lançamentos              (venda curso, venda imóvel, receitas & despesas diversas, pagamentos).
+    • Cobrança                 (ativos, inativos, evolução).
+    • Marketing                (registro de contatos e redes sociais).
+    • Relatórios               (lista completa especificada).
+    • Configuração             (senha, auditoria, tema, metas, modelo contrato).
+    • Sair.
+
+## 2. Situação Atual do Projeto
+
+✓ Login com foto.
+✓ Banco SQLite autocriação.
+✓ Abas criadas no `Notebook` (Início, Cadastros … Sair).
+✓ Dashboard inicial com gráfico de metas.
+✓ Cadastro de Cliente (protótipo simples + botão para formulário completo legado usando SQLite).
+✓ Logger, gravação atômica de JSON, UUID.
+
+## 3. Lacunas Principais
+
+– Cadastros faltantes: Usuário, Loja, Curso, Imóvel, Receita, Despesa.
+– Módulo de Lançamentos (venda, pagamentos, cash-back automático).
+– Painel financeiro diário no Início.
+– Cobrança, Marketing, Relatórios, Configurações avançadas.
+– Geração de contratos DOCX.
+– Auditoria + backup automático.
+
+## 4. Sugestões Técnicas de Melhoria
+
+1. **Tema moderno** – pacote Azure-ttk (claro/escuro) + barra lateral com ícones.
+2. **Camada de serviço** centralizando regras financeiras (juros, cash-back, multas).
+3. **Migrations SQLite** – script incremental para futuras alterações de esquema.
+4. **Design-System mínimo** – helpers de UI, cores, fontes.
+5. **Auditoria & Backup diário** na pasta `backups/`.
+6. **Relatórios** exportáveis CSV/PDF.
+7. **Testes unitários** para cálculos e DAO.
+8. **Preparar permissões** (mesmo se tudo liberado agora).
+
+## 5. Plano de Implementação
+
+| Fase | Entregas                                                                                       | Prazo* |
+|------|-------------------------------------------------------------------------------------------------|--------|
+| 1    | Cadastros completos (Usuário, Loja, Curso, Imóvel, Receita, Despesa)                            | 2 d    |
+| 2    | Lançamentos: venda curso (parcelamento + cash-back), venda imóvel, receitas/despesas diversas   | 2 d    |
+| 3    | Pagamentos: parcelas curso (juros/ descontos), comissão imóvel                                  | 1 d    |
+| 4    | Cobrança (painéis ativos/ inativos), Marketing (registro contatos)                              | 2 d    |
+| 5    | Relatórios + Painel Caixa diário + exportações                                                  | 2–3 d  |
+| 6    | Configurações (metas, tema, senha), contratos DOCX, auditoria viewer, backup automático         | 2 d    |
+
+*Estimativas em dias úteis de desenvolvimento.
+
+## 6. Decisões Pendentes
+
+1. **Metodologia de cálculo de juros** (por dia corrido? mês?).
+2. **Valor exato da multa de cancelamento**.
+3. **Layout dos contratos** (campos e placeholders definitivos).
+4. **Desejo de tema escuro/claro ou apenas claro?**
+5. **Periodicidade dos backups**.
+
+---
+
+Documento gerado em colaboração (Cliente + Assistente) – versão 2025-09-15.
