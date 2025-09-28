@@ -12,7 +12,8 @@ from decimal import Decimal, InvalidOperation
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 import logging
-from sistema_interface import CadastroCliente
+# Classe CadastroCliente movida para models.py
+from src.models import CadastroCliente
 import sys
 from pathlib import Path
 # Adicionar src ao path para importar ui_utils
@@ -37,13 +38,36 @@ class InterfaceCadastroClientes:
         self.estados_civis = ["Solteiro", "Casado", "Divorciado", "Viúvo"]
         self.tipos_telefone = ["Residencial", "Celular", "Comercial"]
         self.graus_parentesco = ["Pai", "Mãe", "Irmão", "Amigo"]
-        self.lojas = ["Centro", "Shopping", "Zona Sul"]
+        # Carregar lojas do banco de dados
+        self.lojas = self._carregar_lojas()
         
         # Contadores para campos dinâmicos
         self.contador_telefones = 0
         self.contador_referencias = 0
         
         self._criar_interface()
+    
+    def _carregar_lojas(self):
+        """Carrega lojas do banco de dados"""
+        try:
+            import sqlite3
+            from pathlib import Path
+            
+            # Caminho do banco de dados - usar caminho absoluto
+            db_path = Path.cwd() / "sistema.db"
+            
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, nome FROM loja WHERE ativo = 1 ORDER BY nome")
+            lojas = cursor.fetchall()
+            conn.close()
+            
+            # Retornar lista de tuplas (id, nome) para o combobox
+            return [(f"{nome} (ID: {id})", id) for id, nome in lojas]
+            
+        except Exception as e:
+            print(f"Erro ao carregar lojas: {e}")
+            return [("Loja Principal (ID: 1)", 1)]
         
     def _criar_interface(self):
         """Cria a interface principal"""
@@ -280,9 +304,13 @@ class InterfaceCadastroClientes:
         self.text_observacao.grid(row=0, column=1, sticky="ew", pady=2)
         
         ttk.Label(frame, text="Loja de Cadastro:").grid(row=1, column=0, sticky="w", pady=2)
-        self.combo_loja = ttk.Combobox(frame, values=self.lojas, width=20, state="readonly")
+        
+        # Extrair apenas os nomes das lojas para o combobox
+        loja_nomes = [loja[0] for loja in self.lojas]
+        
+        self.combo_loja = ttk.Combobox(frame, values=loja_nomes, width=20, state="readonly")
         self.combo_loja.grid(row=1, column=1, sticky="w", pady=2)
-        if self.lojas:
+        if loja_nomes:
             self.combo_loja.current(0)
         
         frame.columnconfigure(1, weight=1)
@@ -397,17 +425,31 @@ class InterfaceCadastroClientes:
         self.entry_tel_trabalho.insert(0, cliente.telefone_trabalho)
         
         # Financeiro (formatar valores para exibição)
-        if cliente.renda_mensal > 0:
-            renda_formatada = f"R$ {float(cliente.renda_mensal):,.2f}".replace(',', '.')
-            self.entry_renda.insert(0, renda_formatada)
-        if cliente.limite_credito > 0:
-            limite_formatado = f"R$ {float(cliente.limite_credito):,.2f}".replace(',', '.')
-            self.entry_limite.insert(0, limite_formatado)
+        try:
+            renda_valor = float(cliente.renda_mensal) if cliente.renda_mensal else 0
+            if renda_valor > 0:
+                renda_formatada = f"R$ {renda_valor:,.2f}".replace(',', '.')
+                self.entry_renda.insert(0, renda_formatada)
+        except (ValueError, TypeError):
+            pass
+            
+        try:
+            limite_valor = float(cliente.limite_credito) if cliente.limite_credito else 0
+            if limite_valor > 0:
+                limite_formatado = f"R$ {limite_valor:,.2f}".replace(',', '.')
+                self.entry_limite.insert(0, limite_formatado)
+        except (ValueError, TypeError):
+            pass
         
         # Observações
         self.text_observacao.insert("1.0", cliente.observacao)
-        if cliente.loja_cadastro in self.lojas:
-            self.combo_loja.set(cliente.loja_cadastro)
+        # Definir loja selecionada
+        if hasattr(cliente, 'loja_cadastro') and cliente.loja_cadastro:
+            # Procurar pela loja na lista de lojas carregadas
+            for loja_nome, loja_id in self.lojas:
+                if cliente.loja_cadastro == loja_nome or str(cliente.loja_cadastro) == str(loja_id):
+                    self.combo_loja.set(loja_nome)
+                    break
     
     def _validar_campos(self):
         """Valida campos obrigatórios"""
@@ -544,8 +586,17 @@ class InterfaceCadastroClientes:
             referencias=referencias,
             observacao=self.text_observacao.get("1.0", tk.END).strip(),
             loja_cadastro=self.combo_loja.get(),
+            loja_id=self._obter_id_loja_selecionada(),
             id=self.cliente_edicao.id if self.cliente_edicao else ""
         )
+    
+    def _obter_id_loja_selecionada(self):
+        """Obtém o ID da loja selecionada"""
+        loja_selecionada = self.combo_loja.get()
+        for loja_nome, loja_id in self.lojas:
+            if loja_nome == loja_selecionada:
+                return loja_id
+        return None
     
     def _salvar_cliente(self):
         """Salva o cliente"""
